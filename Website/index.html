@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexHire Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+	/* --- Pop-up Modal Window Background Overlay --- */
+    .service-modal 
+    {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(2, 30, 56, 0.75); /* Dark blue tinted glassy overlay */
+        backdrop-filter: blur(5px); /* Soft backdrop blur effect */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Higher than sticky nav headers */
+    
+        /* Hidden state defaults */
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Toggle Class for JavaScript */
+    .service-modal.show 
+    {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Pop-up Content Box Card */
+    .modal-content 
+    {
+        background-color: #ffffff;
+        padding: 3rem 2.5rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border-top: 4px solid var(--primary-cyan);
+        text-align: center;
+    
+        /* Dynamic entry slide zoom effect */
+        transform: scale(0.8) translateY(20px);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .service-modal.show .modal-content 
+    {
+        transform: scale(1) translateY(0);
+    }
+
+    /* Close (X) Button Top Right Corner */
+    .close-modal 
+    {
+        position: absolute;
+        top: 15px;
+        right: 22px;
+        font-size: 2rem;
+        color: var(--text-light);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .close-modal:hover 
+    {
+        color: red;
+    }
+
+    /* Typography inside the pop-up window */
+    .modal-hero-icon 
+    {
+        font-size: 3.5rem !important;
+        color: var(--primary-cyan);
+        margin-bottom: 1rem;
+    }
+
+    .modal-body h2 
+    {
+        font-size: 30px;
+        color: var(--dark-blue);
+        margin-bottom: 1.2rem;
+        font-weight: 700;
+    }
+
+    .modal-body p 
+    {
+        color: #4a5568;
+        line-height: 1.8;
+        font-size: 1rem;
+        text-align: left; /* Changes summary block description to clean reading format */
+        background: var(--light-bg);
+        padding: 1.2rem;
+        border-radius: 6px;
+        border-left: 3px solid var(--primary-cyan);
+    }
+
+    .terms-list {
+        text-align: left;
+        margin: 0;
+        padding-left: 1.2rem;
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .terms-list li {
+        margin-bottom: 0.75rem;
+    }
+
+    /* Make your original grid cards look distinctly clickable on hover */
+    .service-card 
+    {
+        cursor: pointer;
+    }
+
+    /* CSS Reset & Variables */
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+		scroll-behavior: smooth; /* <-- ADD THIS LINE */
+        }
+
+        :root 
+        {
+            --primary-cyan: #00a8cc;
+            --dark-blue: #021e38;
+            --light-bg: #f9fbfd;
+            --text-dark: #333;
+            --text-light: #777;
+        }
+
+        body 
+        {
+            background-color: #fff;
+            color: var(--text-dark);
+        }
+
+        a 
+        {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- Header / Navigation --- */
+        header 
+        {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 5%;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo 
+        {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            letter-spacing: 1px;
+        }
+
+	    .logo img 
+        {
+    		height: 180px; /* Adjust this height to fit your header perfectly */
+    		width: auto;
+		    object-fit: contain;
+		}
+
+        .nav-links 
+        {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover 
+        {
+            color: var(--primary-cyan);
+        }
+        /* --- Dropdown Styling --- */
+        .dropdown 
+        {
+            position: relative; /* Acts as an anchor for the absolute positioning of the menu */
+        }
+
+        .dropdown-menu 
+        {
+            position: absolute;
+            top: 100%; /* Positions the menu directly below the nav link */
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            list-style: none;
+            min-width: 240px;
+            padding: 0.5rem 0;
+            border-radius: 6px;
+            border-top: 3px solid var(--primary-cyan); /* Nice accent border line at the top */
+    
+            /* Hidden by default */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .dropdown-menu li 
+        {
+            width: 100%;
+        }
+
+        .dropdown-menu a 
+        {
+            display: block;
+            padding: 0.7rem 1.5rem;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        /* Hover effects */
+        .dropdown-menu a:hover 
+        {
+            background-color: var(--light-bg);
+            color: var(--primary-cyan);
+            padding-left: 1.8rem; /* Subtle slide-right effect on hover */
+        }
+
+        /* Reveal the dropdown when hovering over the parent list item */
+        .dropdown:hover .dropdown-menu 
+        {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .btn-cyan 
+        {
+            background-color: var(--primary-cyan);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-cyan:hover 
+        {
+            background-color: #008ba8;
+        }
+
+        .btn-outline 
+        {
+            background-color: transparent;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            border: 1px solid white;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover 
+        {
+            background-color: white;
+            color: var(--dark-blue);
+        }
+
+        /* --- Hero Section --- */
+        .hero 
+        {
+            background-color: var(--dark-blue);
+            /* Placeholder for the world map background */
+            background-image: radial-gradient(circle at right center, rgba(0, 168, 204, 0.1) 0%, transparent 60%);
+            color: white;
+            padding: 6rem 5%;
+            text-align: left;
+            position: relative;
+        }
+
+        .hero-content 
+        {
+            max-width: 600px;
+        }
+
+        .hero h4 
+        {
+            color: var(--primary-cyan);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 
+        {
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .hero p 
+        {
+            font-size: 1rem;
+            color: #d1d5db;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons 
+        {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* --- Services Section --- */
+        .services 
+        {
+            padding: 5rem 5%;
+            text-align: center;
+            background-color: #fff;
+        }
+
+        .services h4 
+        {
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .services h2 
+        {
+            font-size: 2.5rem;
+            color: var(--dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .services > p 
+        {
+            color: var(--text-light);
+            margin-bottom: 3rem;
+        }
+
+        .services-grid 
+        {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .service-card 
+        {
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 2.5rem 1.5rem;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .service-card:hover 
+        {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-color: var(--primary-cyan);
+        }
+
+        .service-card i 
+        {
+            font-size: 2.5rem;
+            color: var(--primary-cyan);
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card h3 
+        {
+            font-size: 1.2rem;
+            color: var(--dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .service-card p 
+        {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .read-more 
+        {
+            color: var(--primary-cyan);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .read-more i 
+        {
+            font-size: 0.9rem;
+            margin-left: 5px;
+            margin-bottom: 0;
+        }
+
+        /* --- About Section --- */
+        .about 
+        {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            padding: 5rem 5%;
+            background-color: var(--light-bg);
+        }
+
+        .about-text 
+        {
+            flex: 1;
+        }
+
+        .about-text h4 
+        {
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .about-text h2 
+        {
+            font-size: 2.5rem;
+            color: var(--dark-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text p 
+        {
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .about-image 
+        {
+            flex: 1;
+            position: relative;
+        }
+
+        .about-image img 
+        {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .experience-badge 
+        {
+            position: absolute;
+            bottom: 20px;
+            left: -30px;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .experience-badge .circle 
+        {
+            background: var(--primary-cyan);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) 
+        {
+            .nav-links 
+            {
+                display: none; /* Hide nav on small screens for simplicity */
+            }
+            .hero h1 
+            {
+                font-size: 2.5rem;
+            }
+            .about 
+            {
+                flex-direction: column;
+            }
+            .experience-badge 
+            {
+                left: 20px;
+            }
+        }
+	    /* --- Call to Action (CTA) --- */
+        .cta-section 
+        {
+            background-color: var(--primary-cyan);
+            background-image: linear-gradient(135deg, var(--primary-cyan) 0%, #008ba8 100%);
+            color: white;
+            padding: 5rem 5%;
+            text-align: center;
+        }
+
+        .cta-container 
+        {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-container h2 
+        {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-container p 
+        {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+
+        .cta-buttons 
+        {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .cta-buttons .btn-cyan 
+        {
+            background-color: var(--dark-blue);
+        }
+
+        .cta-buttons .btn-cyan:hover 
+        {
+            background-color: #011222;
+        }
+
+        /* --- Footer --- */
+        .site-footer 
+        {
+            background-color: var(--dark-blue);
+            color: #a3b3c2;
+            padding: 5rem 5% 2rem 5%;
+            font-size: 0.9rem;
+        }
+
+        .footer-grid 
+        {
+            display: grid;
+            grid-template-columns: 280px repeat(4, max-content);
+            gap: 2rem;
+		    justify-content: start;
+            max-width: 1200px;
+            margin: 0 auto 4rem auto;
+        }
+
+        .footer-col h3 
+        {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Tiny accent line beneath footer headings */
+        .footer-col h3::after 
+        {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 30px;
+            height: 2px;
+            background-color: var(--primary-cyan);
+        }
+
+        .footer-col p 
+        {
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+		    max-width: 310px;
+        }
+
+        .social-links 
+        {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-links a 
+        {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover 
+        {
+            background-color: var(--primary-cyan);
+            transform: translateY(-3px);
+        }
+
+        .footer-links 
+        {
+            list-style: none;
+        }
+
+        .footer-links li 
+        {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a 
+        {
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-contact 
+        {
+            list-style: none;
+        }
+
+        .footer-contact li 
+        {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .footer-contact i 
+        {
+            color: var(--primary-cyan);
+            margin-top: 3px;
+        }
+
+        /* Footer Bottom Bar */
+        .footer-bottom 
+        {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom-links a 
+        {
+            margin: 0 5px;
+        }
+
+        .footer-bottom-links a:hover 
+        {
+            color: white;
+        }
+
+        .back-to-top {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary-cyan);
+            color: white;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 10000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            background-color: #008ba8;
+        }
+
+        /* Responsive Tweak for CTA buttons */
+        @media (max-width: 600px) 
+        {
+            .cta-buttons 
+            {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .footer-bottom 
+            {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+		/* --- Footer Logo Styling --- */
+		.logo-footer img 
+        {
+            height: 45px; /* Matches your header logo height */
+            width: auto;
+  		    object-fit: contain;
+   		    margin-bottom: 1.2rem;
+    		display: block;
+    	}
+
+	    /* --- Clients Marquee Styling --- */
+        .clients-section 
+        {
+            padding: 4rem 0;
+            background-color: #fff;
+            overflow: hidden; /* Keeps the page clean and prevents horizontal scrolling bars */
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .clients-title 
+        {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 5%;
+        }
+
+        .clients-title h4 
+        {
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .clients-title h2 
+        {
+            font-size: 2rem;
+            color: var(--dark-blue);
+        }
+
+        /* The viewport hiding the overflows */
+        .marquee-container 
+        {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            padding: 1.5rem 0;
+            background: var(--light-bg);
+            display: flex;
+		    align-items: center;
+        }
+
+        /* Subtle fade gradients on the left and right edges for a professional look */
+        .marquee-container::before,
+        .marquee-container::after 
+        {
+            content: "";
+            height: 100%;
+            width: 150px;
+            position: absolute;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .marquee-container::before 
+        {
+            left: 0;
+            top: 0;
+            background: linear-gradient(to right, #fff, transparent);
+        }
+        .marquee-container::after 
+        {
+            right: 0;
+            top: 0;
+            background: linear-gradient(to left, #fff, transparent);
+        }
+
+        /* The moving track holding all items */
+        .marquee-track 
+        {
+            display: flex;
+            width: max-content;
+		    flex-wrap: nowrap;
+            animation: scrollMarquee 25s linear infinite; /* Loops infinitely without snapping back */
+		    will-change: transform; /* 🚀 Forces smooth hardware acceleration */
+        }
+
+        /* Individual client tabs/badges */
+        .marquee-item 
+        {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1.8rem;
+            margin: 0 0.5rem;
+            background: #ffffff; /* Crisp white box */
+            border: 1px solid #e2e8f0; /* Subtle light gray border */
+    		border-radius: 6px; /* Sleek, slightly rounded professional corners */
+  	        font-weight: 600;
+ 	        color: #334155;
+ 	        font-size: 0.9rem;
+ 	        white-space: nowrap;
+  	        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Soft premium shadow drop */
+		    flex-shrink: 0; /* <-- Add this line to stop images from squishing */
+        }
+
+        /* Pause the slider smoothly when a user hovers over a logo */
+        .marquee-track:hover 
+        {
+            animation-play-state: paused;
+        }
+
+        .marquee-item i 
+        {
+            font-size: 1.3rem;
+            color: #8a9cae;
+            transition: color 0.3s;
+        }
+
+        .marquee-item:hover 
+        {
+            color: var(--primary-cyan);
+            border-color: var(--primary-cyan);
+            transform: translateY(-2px);
+        }
+        .marquee-item:hover i 
+        {
+            color: var(--primary-cyan);
+        }
+
+        /* --- Infinite Scroll Keyframe Animation --- */
+        @keyframes scrollMarquee 
+        {
+            0% 
+            {
+                transform: translateX(0);
+            }
+            100% 
+            {
+                transform: translateX(-50%); /* Moves exactly half the track width before resetting */
+            }
+        }
+	    /* Restricts the size of the client logo images inside the marquee */
+        .marquee-item img 
+        {
+            height: 80px; /* Adjust this height to make the logos bigger or smaller */
+            width: auto;
+            object-fit: contain;
+	        /* 🚀 ADD THIS LINE TO REMOVE WHITE BOXES */
+            mix-blend-mode: multiply;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="images/logo.png.png" alt="NexHire Solutions Logo">
+        </div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li class="dropdown">
+   		        <a href="#services">Services <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></a>
+  		        <ul class="dropdown-menu">
+      		        <li><a href="#services">Cloud Services</a></li>
+     		        <li><a href="#services">ERP Solutions</a></li>
+     		        <li><a href="#services">Business Intelligence</a></li>
+     		        <li><a href="#services">Application Integration</a></li>
+    		        <li><a href="#services">Application Development</a></li>
+    		        <li><a href="#services">Staffing Solutions</a></li>
+  		        </ul>
+		    </li>
+            <li><a href="#">Solutions</a></li>
+            <li><a href="#contact">Job Seekers</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+        </ul>
+
+        <a href="https://www.linkedin.com/company/nexhire-solutions-inc/" target="_blank" style="text-decoration: none;">
+            <button class="btn-cyan">Get In Touch</button>
+	    </a>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h4>Transforming Businesses With</h4>
+            <h1>INNOVATIVE SOLUTIONS<br>& TOP TALENT</h1>
+            <p>We deliver end-to-end IT services, consulting, and staffing solutions to help your business innovate, grow, and succeed in a digital-first world.</p>
+            <div class="hero-buttons">
+		        <a href="#services" class="btn-cyan" style="display: inline-block; text-align: center;">
+     		        Our Services <i class="fa-solid fa-arrow-right"></i>
+   		        </a>
+                <a href="#contact" class="btn-outline" style="display: inline-block; text-align: center;">
+        		    Hire Top Talent <i class="fa-solid fa-arrow-right"></i>
+    		    </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <h4>Our Services</h4>
+        <h2>End-to-End IT Solutions</h2>
+        <p>From cloud to consulting, we offer a wide range of services to accelerate your business transformation.</p>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="fa-solid fa-cloud"></i>
+                <h3>Cloud Services</h3>
+                <p>Scalable, secure, and cost-effective cloud solutions for modern businesses.</p>
+                <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-gear"></i>
+                <h3>ERP Solutions</h3>
+                <p>Streamline operations and improve efficiency with our ERP implementations.</p>
+                <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-chart-column"></i>
+                <h3>Business Intelligence</h3>
+                <p>Turn data into insights with advanced BI solutions and analytics.</p>
+                <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-puzzle-piece"></i>
+                <h3>Application Integration</h3>
+                <p>Seamless integration services to connect your systems and applications.</p>
+                <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-code"></i>
+                <h3>Application Development</h3>
+                <p>Custom software solutions tailored to your unique business needs.</p>
+                <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-user-tie"></i>
+                <h3>Staffing Solutions</h3>
+                <p>Find the right talent, right when you need it with our staffing services.</p>
+                <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+	
+<section class="clients-section">
+    <div class="clients-title">
+        <h4>Our Partners</h4>
+        <h2>Clients We've Worked With</h2>
+    </div>
+    
+    <div class="marquee-container">
+        <div class="marquee-track">
+            <div class="marquee-item"><img src="clients/Zensar.png" alt="zensar"></div>
+            <div class="marquee-item"><img src="clients/TCS.png" alt="tcs"></div>
+            <div class="marquee-item"><img src="clients/Kforce.png" alt="kforce"></div>
+            <div class="marquee-item"><img src="clients/KPI.png" alt="kpi"></div>
+            <div class="marquee-item"><img src="clients/Experis.png" alt="experis"></div>
+            <div class="marquee-item"><img src="clients/Sogeti.png" alt="sogeti"></div>
+            <div class="marquee-item"><img src="clients/TEKsystems.png" alt="teksystems"></div>
+		    <div class="marquee-item"><img src="clients/Lifetime.png" alt="lifetime"></div>
+            <div class="marquee-item"><img src="clients/Zensar.png" alt="zensar"></div>
+            <div class="marquee-item"><img src="clients/TCS.png" alt="tcs"></div>
+            <div class="marquee-item"><img src="clients/Kforce.png" alt="kforce"></div>
+            <div class="marquee-item"><img src="clients/KPI.png" alt="kpi"></div>
+            <div class="marquee-item"><img src="clients/Experis.png" alt="experis"></div>
+            <div class="marquee-item"><img src="clients/Sogeti.png" alt="sogeti"></div>
+            <div class="marquee-item"><img src="clients/TEKsystems.png" alt="teksystems"></div>
+		    <div class="marquee-item"><img src="clients/Lifetime.png" alt="lifetime"></div>
+        </div>
+    </div>
+</section>
+
+
+<section id="about" class="about">
+    <div class="about-text">
+        <h4>About Us</h4>
+        <h2>Your Trusted Technology Partner</h2>
+        <p>At NexHire Solutions, we combine technology, talent, and industry expertise to deliver innovative solutions that drive real business outcomes.</p>
+        <p>With a client-first approach and a commitment to excellence, we help organizations stay ahead in today's fast-changing world.</p>
+    </div>
+    <div class="about-image">
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Team meeting">
+                <div class="experience-badge">
+                    <div class="circle">7+</div>
+                    <div>
+                        <strong>7+</strong><br>
+                        <span style="color: var(--text-light); font-size: 0.9rem;">Years of Experience</span>
+                    </div>
+                </div>
+    </div>
+</section>
+<section id="contact" class="cta-section">
+    <div class="cta-container">
+        <h2>Ready to Elevate Your Business?</h2>
+        <p>Whether you need a cutting-edge cloud strategy, customized software development, or top-tier technical talent, our experts are here to deliver.</p>
+        <div class="cta-buttons">
+		    <a href="https://www.linkedin.com/company/nexhire-solutions-inc/" target="_blank" style="text-decoration: none; display: inline-block;">
+                <button class="btn-cyan">Get a Free Consultation <i class="fa-solid fa-calendar-days" style="margin-left: 8px;"></i>
+            </a>
+                </button>
+        </div>
+    </div>
+</section>
+
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div class="logo-footer">
+  			    <h2>NexHire Solutions INC</h2>
+		    </div>
+                    
+            <p>Empowering businesses with<br>
+		    top-tier technology consulting,<br> 
+		    innovative application development,<br> 
+		    and robust IT staffing solutions worldwide.<br></p>
+            <div class="social-links">
+                <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <ul class="footer-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#services">Our Services</a></li>
+                <li><a href="#contact">Careers</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Our Services</h3>
+            <ul class="footer-links">
+                <li><a href="#services">Cloud Services</a></li>
+                <li><a href="#services">ERP Solutions</a></li>
+                <li><a href="#services">Business Intelligence</a></li>
+                <li><a href="#services">Application Development</a></li>
+                <li><a href="#services">Staffing Solutions</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Contact Info</h3>
+            <ul class="footer-contact">
+                <li><i class="fa-solid fa-location-dot"></i> 30N Gould St, Ste R, Sheridan, WY 82801</li>
+                <li><i class="fa-solid fa-phone"></i> +1 (512) 555-0199</li>
+			    <li><i class="fa-solid fa-phone"></i> +91 (901) 070-5469</li>
+                <li><i class="fa-solid fa-envelope"></i> info@nexhiresoln.com</li>
+            </ul>
+        </div>
+    	<div class="footer-col">
+    		<h3>Delivery Centers</h3>
+    		<ul class="footer-contact">
+        	    <li><i class="fa-solid fa-building"></i> <strong>India:</strong> Hyderabad | Bengaluru</li>
+			    <li><i class="fa-solid fa-phone"></i> +91 (901) 070-5469</li>
+			    <li><i class="fa-solid fa-envelope"></i> hr@nexhiresoln.com</li>
+			    <li><i class="fa-solid fa-envelope"></i> nexhiresolutions@gmail.com</li>
+       		 </ul>
+    	</div>
+
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2019 NexHire Solutions. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+            <a href="#" id="privacyLink">Privacy Policy</a> | <a href="#" id="termsLink">Terms & Conditions</a>
+        </div>
+    </div>
+</footer>
+
+<!-- --- Service Modal (Pop-up Screen) --- -->
+<div id="serviceModal" class="service-modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-body">
+            <i id="modalIcon" class=""></i>
+            <h2 id="modalTitle">Service Title</h2>
+            <p id="modalDescription">Detailed information will appear here.</p>
+            <a href="#contact" id="modalBtn" class="btn-cyan" style="display:inline-block; margin-top:1.5rem;">Inquire About This Service</a>
+        </div>
+    </div>
+</div>
+
+<!-- --- Modal JavaScript Logic --- -->
+<script>
+    // Object containing expanded info for each service
+    const serviceDetails = 
+    {
+        "Cloud Services": "Our comprehensive Cloud Services include seamless cloud migration, multi-cloud strategy development, automated backups, and 24/7 security monitoring. We help you scale your business operations efficiently using AWS, Microsoft Azure, and Google Cloud platforms while drastically reducing your physical infrastructure costs.",
+        "ERP Solutions": "Optimize your entire enterprise workflows with our robust ERP Solutions. We specialize in custom implementations, module configurations, and platform upgrades for leading ERP software. From supply chain management and human resources to financial tracking, we connect your data points into a single source of truth.",
+        "Business Intelligence": "Turn raw institutional data into actionable, high-revenue insights. Our BI services offer real-time data modeling, custom interactive dashboards, and predictive analysis reporting tools. We build architectures that help stakeholders track key metrics instantly and make smarter, faster business decisions.",
+        "Application Integration": "Break down system silos. We design and develop secure APIs and middleware solutions that seamlessly connect your legacy platforms, modern cloud apps, and third-party software. Ensure data synchronizes instantly across your entire digital ecosystem with zero data loss.",
+        "Application Development": "Get custom, scalable desktop, web, and mobile software engineered precisely to your unique workflow demands. We utilize modern agile methodologies to build clean, fast, and high-security code bases designed to offer your end-users an incredible UI/UX experience.",
+        "Staffing Solutions": "Bridge your critical technical skills gaps immediately. Whether you need short-term contract developers, specialized IT consultants, or permanent direct hires, our rigorous talent screening pipeline matches your project requirements with the top 5% of technical talent globally."
+    };
+
+    const modal = document.getElementById("serviceModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDescription");
+    const modalIcon = document.getElementById("modalIcon");
+    const closeModal = document.querySelector(".close-modal");
+
+    // Intercept clicks on "Read More" and Service Cards
+    document.querySelectorAll('.service-card').forEach
+    (card => 
+    {
+        // Prevent default hash jump if user clicks the actual link
+        const readMoreBtn = card.querySelector('.read-more');
+        if(readMoreBtn) 
+        {
+            readMoreBtn.addEventListener('click', (e) => e.preventDefault());
+        }
+
+        card.addEventListener
+        ('click', function(e) 
+        {
+            const titleText = this.querySelector('h3').innerText;
+            const iconClass = this.querySelector('i').getAttribute('class');
+            
+            // Set data dynamically inside the pop-up modal
+            modalTitle.innerText = titleText;
+            modalDesc.innerText = serviceDetails[titleText] || "Contact us for more specialized details regarding this IT service.";
+            modalDesc.style.fontSize = '';
+            modalIcon.setAttribute('class', iconClass + ' modal-hero-icon');
+            document.getElementById('modalBtn').style.display = 'inline-block';
+            
+            // Display the modal
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Stop background page scrolling
+        });
+    });
+
+    // Close modal via 'X' icon
+    closeModal.addEventListener
+    ('click', () => 
+    {
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    });
+
+    // Close modal if user clicks anywhere outside the content box
+    window.addEventListener
+    ('click', (e) => 
+    {
+        if (e.target === modal) 
+        {
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+    });
+    
+    // Close modal on 'Inquire' button click
+    document.getElementById('modalBtn').addEventListener
+    ('click', () => 
+    {
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    });
+
+    // Handle Terms & Conditions link click
+    document.getElementById('termsLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Set modal content for Terms & Conditions
+        modalTitle.innerText = 'Terms & Conditions';
+        modalDesc.innerHTML = `
+            <ul class="terms-list">
+                <li>By using this website, you agree that you are at least 18 years old or accessing under the supervision of a legal guardian. You agree not to use the website for any unlawful or prohibited activities.</li>
+                <li>Nexhire Solutions offers technology consulting, custom software development, SaaS solutions, and staffing services. These services are subject to separate contracts and agreements that may be entered into with clients or candidates.</li>
+                <li>All content on this website, including text, graphics, logos, icons, images, and software, is the property of Nexhire Solutions or its licensors. Unauthorized use, reproduction, or distribution of any materials is strictly prohibited.</li>
+                <li>Our website may contain links to third-party sites. We do not control or endorse the content of these sites and are not responsible for any damages or losses resulting from your use of third-party websites.</li>
+                <li>Nexhire Solutions will not be liable for any direct, indirect, incidental, or consequential damages arising from your use of the website or services, including but not limited to data loss, service interruptions, or inaccurate information.</li>
+                <li>While we aim to keep our website and services available 24/7, we do not guarantee uninterrupted access and may suspend access for maintenance, upgrades, or other necessary reasons without prior notice.</li>
+                <li>We reserve the right to modify these Terms & Conditions at any time. Changes will be posted on this page and will become effective immediately. Continued use of the website constitutes your acceptance of the revised terms.</li>
+                <li>If you have any questions or concerns about these Terms & Conditions, please contact us.</li>
+            </ul>`;
+        modalDesc.style.fontSize = '0.30rem';
+        modalIcon.setAttribute('class', 'fa-solid fa-file-contract modal-hero-icon');
+        document.getElementById('modalBtn').style.display = 'none';
+        
+        // Display the modal
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    });
+
+    // Handle Privacy Policy link click
+    document.getElementById('privacyLink').addEventListener('click', (e) => {
+        e.preventDefault();
+
+        modalTitle.innerText = 'Privacy Policy';
+        modalDesc.innerHTML = `
+            <ul class="terms-list">
+                <li>We collect and use personal information only as needed to provide and improve our services. Your data is handled securely and in accordance with applicable privacy laws.</li>
+                <li>We do not sell your personal information to third parties. We may share your data with trusted service providers to support website operations and service delivery.</li>
+                <li>Cookies and tracking technologies may be used to enhance your experience. You can control cookie settings through your browser and opt out of non-essential tracking.</li>
+                <li>We implement industry-standard security measures to safeguard your personal information from unauthorized access, disclosure, or misuse.</li>
+                <li>Our website is not intended for children under the age of 13. We do not knowingly collect data from minors. If you believe a child has submitted personal information, please let us know immediately.</li>
+                <li>We may update this Privacy Policy periodically. Changes will be posted on this page with the updated effective date. Please review this policy regularly to stay informed.</li>
+                <li>For questions about this Privacy Policy, reach out to us at: hr@nexhiresoln.com</li>
+            </ul>`;
+        modalDesc.style.fontSize = '0.30rem';
+        modalIcon.setAttribute('class', 'fa-solid fa-shield-halved modal-hero-icon');
+        document.getElementById('modalBtn').style.display = 'none';
+
+        // Display the modal
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    });
+
+    const backToTop = document.createElement('button');
+    backToTop.id = 'backToTop';
+    backToTop.className = 'back-to-top';
+    backToTop.type = 'button';
+    backToTop.title = 'Back to top';
+    backToTop.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+    document.body.appendChild(backToTop);
+
+    const toggleBackToTop = () => {
+        if (window.scrollY > 800) {
+            backToTop.classList.add('show');
+        } else {
+            backToTop.classList.remove('show');
+        }
+    };
+
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    window.addEventListener('scroll', toggleBackToTop);
+</script>
+
+</body>
+</html>
