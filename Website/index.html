@@ -129,7 +129,12 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
-		scroll-behavior: smooth; /* <-- ADD THIS LINE */
+        scroll-behavior: smooth; /* <-- ADD THIS LINE */
+        }
+
+        /* Prevent accidental horizontal overflow (keeps footer inside viewport) */
+        html, body {
+            overflow-x: hidden;
         }
 
         :root 
@@ -589,11 +594,14 @@
         .footer-grid 
         {
             display: grid;
-            grid-template-columns: 280px repeat(4, max-content);
+            grid-template-columns: 280px repeat(3, minmax(160px, 1fr));
             gap: 2rem;
-		    justify-content: start;
+            justify-content: start;
             max-width: 1200px;
-            margin: 0 auto 4rem auto;
+            margin: 0 auto 4rem;
+            padding: 0 1rem; /* small horizontal padding to prevent edge collision on small screens */
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .footer-col h3 
